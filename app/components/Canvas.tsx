@@ -49,15 +49,11 @@ const Canvas: React.FC<CanvasProps> = ({ imgSrc, predictions }) => {
           context.lineWidth = 2;
           context.strokeRect(x1, y1, width, height);
 
-          // // Draw label background
-          // context.fillStyle = 'white';
-          // context.fillRect(x1, y2 - 20, context.measureText(`${prediction.label} (${(prediction.score * 100).toFixed(2)}%)`).width + 10, 20);
-
           // Draw label text
           context.fillStyle = 'blue';
           context.font = '40px Arial';
           context.fillText(
-            `${prediction.label} (${(prediction.score * 100).toFixed(2)}%)`,
+            `${prediction.label} (${(prediction.score * 100).toFixed(0)}%)`,
             x1 + 5,
             y2 - 5
           );

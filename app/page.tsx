@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import PredictModal from './components/PredictModal';  // Import the PredictModal component
 import Modal from './components/Modal';
+import { simulatedPredictions } from './constants/simulatedPrediction';
 
 const Canvas = dynamic(() => import('./components/Canvas'), { ssr: false });
 
@@ -60,50 +61,14 @@ const Home = () => {
     setIsModalOpen(true);  // Open the view modal
   };
 
-  const handleSave = (title: string, description: string) => {
+  const processImage = (title?: string, description?: string) => {
     if (!selectedFile) return;
 
     const reader = new FileReader();
     reader.onload = (e) => {
       const imgSrc = e.target?.result as string;
-      setPredictions([]); // Clear previous predictions
       setImgSrc(imgSrc);
       setShowPredictions(true);
-
-      // Simulate predictions
-      const simulatedPredictions = [
-        {
-          label: 'orange',
-          score: 0.97,
-          bbox: {
-            x1: 589,
-            x2: 1443,
-            y1: 92,
-            y2: 927,
-          },
-        },
-        {
-          label: 'bowl',
-          score: 0.29,
-          bbox: {
-            x1: -1,
-            x2: 1617,
-            y1: 25,
-            y2: 1193,
-          },
-        },
-        {
-          label: 'person',
-          score: 0.28,
-          bbox: {
-            x1: -3,
-            x2: 801,
-            y1: 1,
-            y2: 204,
-          },
-        },
-      ];
-
       setPredictions(simulatedPredictions);
       setPredictionDetails({
         filename: selectedFile.name,
@@ -117,59 +82,13 @@ const Home = () => {
     setIsPredictModalOpen(false);
   };
 
+  const handleSave = (title: string, description: string) => {
+    console.log("Saving title and description", { title, description });
+    processImage(title, description);
+  };
+
   const handleCancel = () => {
-    if (!selectedFile) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imgSrc = e.target?.result as string;
-      setPredictions([]); // Clear previous predictions
-      setImgSrc(imgSrc);
-      setShowPredictions(true);
-
-      // Simulate predictions
-      const simulatedPredictions = [
-        {
-          label: 'orange',
-          score: 0.97,
-          bbox: {
-            x1: 589,
-            x2: 1443,
-            y1: 92,
-            y2: 927,
-          },
-        },
-        {
-          label: 'bowl',
-          score: 0.29,
-          bbox: {
-            x1: -1,
-            x2: 1617,
-            y1: 25,
-            y2: 1193,
-          },
-        },
-        {
-          label: 'person',
-          score: 0.28,
-          bbox: {
-            x1: -3,
-            x2: 801,
-            y1: 1,
-            y2: 204,
-          },
-        },
-      ];
-
-      setPredictions(simulatedPredictions);
-      setPredictionDetails({
-        filename: selectedFile.name,
-        size: selectedFile.size,
-        uploadTime: new Date().toLocaleString(),
-      });
-    };
-    reader.readAsDataURL(selectedFile);
-    setIsPredictModalOpen(false);
+    processImage();
   };
 
   return (
