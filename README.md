@@ -40,5 +40,7 @@ On clicking the VIEW button, the following should happen:
   refer to the image below for inspiration:
 
 
+## Hosted
+https://my-prediction.vercel.app/
 
 
