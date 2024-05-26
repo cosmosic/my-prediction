@@ -1,113 +1,233 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import PredictModal from './components/PredictModal';  // Import the PredictModal component
+import Modal from './components/Modal';
+
+const Canvas = dynamic(() => import('./components/Canvas'), { ssr: false });
+
+interface ImageDetails {
+  filename: string;
+  size: number;
+  uploadTime: string;
+  title?: string;
+  description?: string;
+}
+
+interface Prediction {
+  label: string;
+  score: number;
+  bbox: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+  };
+}
+
+const Home = () => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [imageDetails, setImageDetails] = useState<ImageDetails | null>(null);
+  const [predictionDetails, setPredictionDetails] = useState<ImageDetails | null>(null);
+  const [showPredictions, setShowPredictions] = useState<boolean>(false);
+  const [isPredictModalOpen, setIsPredictModalOpen] = useState<boolean>(false);  // State for modal visibility
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);  // State for view modal visibility
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files[0]) {
+      const file = files[0];
+      setSelectedFile(file);
+      setImgSrc(URL.createObjectURL(file));
+      setImageDetails({
+        filename: file.name,
+        size: file.size,
+        uploadTime: new Date().toLocaleString(),
+      });
+      setShowPredictions(false);
+    }
+  };
+
+  const handlePredict = () => {
+    if (!selectedFile) return;
+    setIsPredictModalOpen(true);  // Open the modal
+  };
+
+  const handleView = () => {
+    setIsModalOpen(true);  // Open the view modal
+  };
+
+  const handleSave = (title: string, description: string) => {
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imgSrc = e.target?.result as string;
+      setPredictions([]); // Clear previous predictions
+      setImgSrc(imgSrc);
+      setShowPredictions(true);
+
+      // Simulate predictions
+      const simulatedPredictions = [
+        {
+          label: 'orange',
+          score: 0.97,
+          bbox: {
+            x1: 589,
+            x2: 1443,
+            y1: 92,
+            y2: 927,
+          },
+        },
+        {
+          label: 'bowl',
+          score: 0.29,
+          bbox: {
+            x1: -1,
+            x2: 1617,
+            y1: 25,
+            y2: 1193,
+          },
+        },
+        {
+          label: 'person',
+          score: 0.28,
+          bbox: {
+            x1: -3,
+            x2: 801,
+            y1: 1,
+            y2: 204,
+          },
+        },
+      ];
+
+      setPredictions(simulatedPredictions);
+      setPredictionDetails({
+        filename: selectedFile.name,
+        size: selectedFile.size,
+        uploadTime: new Date().toLocaleString(),
+        title,
+        description,
+      });
+    };
+    reader.readAsDataURL(selectedFile);
+    setIsPredictModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imgSrc = e.target?.result as string;
+      setPredictions([]); // Clear previous predictions
+      setImgSrc(imgSrc);
+      setShowPredictions(true);
+
+      // Simulate predictions
+      const simulatedPredictions = [
+        {
+          label: 'orange',
+          score: 0.97,
+          bbox: {
+            x1: 589,
+            x2: 1443,
+            y1: 92,
+            y2: 927,
+          },
+        },
+        {
+          label: 'bowl',
+          score: 0.29,
+          bbox: {
+            x1: -1,
+            x2: 1617,
+            y1: 25,
+            y2: 1193,
+          },
+        },
+        {
+          label: 'person',
+          score: 0.28,
+          bbox: {
+            x1: -3,
+            x2: 801,
+            y1: 1,
+            y2: 204,
+          },
+        },
+      ];
+
+      setPredictions(simulatedPredictions);
+      setPredictionDetails({
+        filename: selectedFile.name,
+        size: selectedFile.size,
+        uploadTime: new Date().toLocaleString(),
+      });
+    };
+    reader.readAsDataURL(selectedFile);
+    setIsPredictModalOpen(false);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Object Detection</h1>
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <input type="file" onChange={handleFileChange} className="mb-4" />
+          {imageDetails && (
+            <div className="mb-4">
+              <p><strong>Thumbnail:</strong> {imageDetails.filename}</p>
+              <p><strong>Filename:</strong> {imageDetails.filename}</p>
+              <p><strong>Size:</strong> {(imageDetails.size / 1024).toFixed(2)} KB</p>
+              <p><strong>Upload Time:</strong> {imageDetails.uploadTime}</p>
+            </div>
+          )}
+          <button onClick={handlePredict} className="bg-blue-500 text-white py-2 px-4 rounded mb-4">
+            Predict
+          </button>
+          {imgSrc && (
+            <div className="border border-gray-300 p-2">
+              <img src={imgSrc} alt="Uploaded" className="max-w-full h-auto" />
+            </div>
+          )}
+        </div>
+        <div className="w-1/2">
+          <h1 className="text-2xl font-bold mb-4">Predicted Image</h1>
+          {showPredictions && imgSrc && (
+            <>
+              {predictionDetails && (
+                <div className="mb-4">
+                  <p><strong>Thumbnail:</strong> {predictionDetails.filename}</p>
+                  {predictionDetails.title && <p><strong>Title:</strong> {predictionDetails.title}</p>}
+                  {predictionDetails.description && <p><strong>Description:</strong> {predictionDetails.description}</p>}
+                  <p><strong>Prediction Time:</strong> {predictionDetails.uploadTime}</p>
+                  <button onClick={handleView} className="bg-blue-500 text-white py-2 px-4 rounded m-2">
+                    View
+                  </button>
+                </div>
+              )}
+              <Canvas imgSrc={imgSrc} predictions={predictions} />
+            </>
+          )}
         </div>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-xl font-bold mb-2 text-black">Uploaded Image with Predictions</h2>
+        {imgSrc && <Canvas imgSrc={imgSrc} predictions={predictions} />}
+      </Modal>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <PredictModal
+        isOpen={isPredictModalOpen}
+        onClose={handleCancel}
+        onSave={handleSave}
+      />
+    </div>
   );
-}
+};
+
+export default Home;
