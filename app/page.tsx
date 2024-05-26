@@ -174,7 +174,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Object Detection</h1>
+      <h1 className="text-2xl font-bold mb-4">Images</h1>
       <div className="flex gap-4">
         <div className="w-1/2">
           <input type="file" onChange={handleFileChange} className="mb-4" />
@@ -196,7 +196,7 @@ const Home = () => {
           )}
         </div>
         <div className="w-1/2">
-          <h1 className="text-2xl font-bold mb-4">Predicted Image</h1>
+          <h1 className="text-2xl font-bold mb-4">Prediction</h1>
           {showPredictions && imgSrc && (
             <>
               {predictionDetails && (

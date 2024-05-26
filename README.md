@@ -50,25 +50,7 @@ On clicking the VIEW button, the following should happen:
 - The “label” and “score” should be displayed along with the prediction for the item. Please
   refer to the image below for inspiration:
 
-  <img src="./assets/prediction-tab-example.png" width="500px" >
+
 
 We wish you the best of luck and look forward to your submission. Thank you for your time!
 
-## Evaluation
-The submission will be evaluated on a number of criteria including:
-- Functionality matching the brief
-- UI and UX
-- Appropriate use of web technologies and standards 
-- State management, error handling, etc
-
-## Instructions
-
-1. Create a github repository.
-
-2. Write a solution to the challenge described above.
-
-3. Once you are finished, send your repo to ashwanth.krishnan@qpiai.tech. 
-
-4. You can use any stack of your choice, ideally Next.js, Typescript, tailwind and prisma.
-
-5. Host your working solution on vercel.
