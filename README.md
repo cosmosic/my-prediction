@@ -1,14 +1,3 @@
-# Frontend assignment
-
-## Problem description
-
-### Introduction
-
-
-Please build a web application to satisfy the brief specified below. Feel free to bring in any additional frameworks or dependencies to help in development. We may just ask you to explain these choices.
-
-We ask you to use a mock api endpoint /predict that returns predictions in the specified format [db.json](./assets/db.json) file. 
-The application only needs to work with the provided [image](./assets/orange.jpg) and [db.json](./assets/db.json) response - no other APIs is needed.
 
 ### The Brief
 
@@ -52,5 +41,4 @@ On clicking the VIEW button, the following should happen:
 
 
 
-We wish you the best of luck and look forward to your submission. Thank you for your time!
 
